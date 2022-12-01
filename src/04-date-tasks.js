@@ -19,10 +19,9 @@
  *    'Tue, 26 Jan 2016 13:48:02 GMT' => Date()
  *    'Sun, 17 May 1998 03:00:00 GMT+01' => Date()
  */
-function parseDataFromRfc2822(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromRfc2822(value) {
+  return new Date(value);
 }
-
 /**
  * Parses an ISO 8601 string date representation into date value
  * For ISO 8601 date specification refer to : https://en.wikipedia.org/wiki/ISO_8601
@@ -34,8 +33,8 @@ function parseDataFromRfc2822(/* value */) {
  *    '2016-01-19T16:07:37+00:00'    => Date()
  *    '2016-01-19T08:07:37Z' => Date()
  */
-function parseDataFromIso8601(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromIso8601(value) {
+  return new Date(value);
 }
 
 
@@ -53,8 +52,8 @@ function parseDataFromIso8601(/* value */) {
  *    Date(2012,1,1)    => true
  *    Date(2015,1,1)    => false
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  return new Date(date.getFullYear(), 1, 29).getMonth() === 1;
 }
 
 
@@ -73,8 +72,18 @@ function isLeapYear(/* date */) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,10,0,0,250)     => "00:00:00.250"
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
-function timeSpanToString(/* startDate, endDate */) {
-  throw new Error('Not implemented');
+function timeSpanToString(startDate, endDate) {
+  const timespan = endDate - startDate;
+  let result = '';
+  const hours = Math.floor(timespan / 3600000);
+  const minutes = Math.floor((timespan - (hours * 3600000)) / 60000);
+  const seconds = Math.floor((timespan - (hours * 3600000) - (minutes * 60000)) / 1000);
+  const milleseconds = timespan % 1000;
+  result += hours >= 10 ? `${hours}:` : `0${hours}:`;
+  result += minutes >= 10 ? `${minutes}:` : `0${minutes}:`;
+  result += seconds >= 10 ? `${seconds}.` : `0${seconds}.`;
+  result += milleseconds >= 10 ? `${milleseconds}` : `00${milleseconds}`;
+  return result;
 }
 
 
@@ -94,10 +103,15 @@ function timeSpanToString(/* startDate, endDate */) {
  *    Date.UTC(2016,3,5,18, 0) => Math.PI
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
-function angleBetweenClockHands(/* date */) {
-  throw new Error('Not implemented');
+function angleBetweenClockHands(date) {
+  const hours = date.getUTCHours() % 12;
+  const minutes = date.getUTCMinutes() % 60;
+  let angle = Math.abs(0.5 * (60 * hours - 11 * minutes));
+  if (angle > 180) {
+    angle = 360 - angle;
+  }
+  return angle * (Math.PI / 180);
 }
-
 
 module.exports = {
   parseDataFromRfc2822,
